@@ -23,7 +23,8 @@ function get10(sample_id) {
         zipped = sample.otu_ids.map(function(e, i) {
             return {
                 otu_id: e,
-                otu_value: sample.sample_values[i]
+                otu_value: sample.sample_values[i],
+                otu_label: sample.otu_labels[i]
             };
         });
         zipped = zipped
@@ -39,7 +40,8 @@ function init_plot() {
     var trace1 = {
         x: top10.map(e => e.otu_value),
         y: top10.map(e => `OTU ${e.otu_id}`),
-        name: "Sample values",
+        text: top10.map(e => e.otu_label),
+        name: "Subject 940",
         type: "bar",
         orientation: 'h'
       };
@@ -47,8 +49,8 @@ function init_plot() {
       var data = [trace1];
       
       var layout = {
-        title: "Sample values"
-        // yaxis: { title: "Sample values"}
+        // title: "Sample values",
+        xaxis: { title: "Sample values"}
       };
       
       // Plot the chart to a div tag with id "plot"
