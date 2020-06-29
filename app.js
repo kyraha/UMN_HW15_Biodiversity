@@ -86,6 +86,35 @@ function init_metadata(subject_id) {
         .text(md => md.join(": "));
 };
 
+function init_gauge() {
+    var data = [
+        {
+            value: 2,
+            title: { text: "Scrubs per week" },
+            type: "indicator",
+            mode: "gauge+number",
+            gauge: {
+                axis: { range: [0, 10], nticks: 10 },
+                steps: [
+                    { range: [0, 1], color: "#fff" },
+                    { range: [1, 2], color: "#ddf" },
+                    { range: [2, 3], color: "#bbf" },
+                    { range: [3, 4], color: "#99f" },
+                    { range: [4, 5], color: "#8af" },
+                    { range: [5, 6], color: "#7bf" },
+                    { range: [6, 7], color: "#6cf" },
+                    { range: [7, 8], color: "#5df" },
+                    { range: [8, 9], color: "#4ef" },
+                    { range: [9, 10], color: "#3ff" }
+                ]
+            }
+        }
+    ];
+    
+    // var layout = { width: 600, height: 500, margin: { t: 0, b: 0 } };
+    Plotly.newPlot('gauge', data);
+}
+
 function optionChanged(subject_id) {
     init_metadata(subject_id);
 
@@ -108,6 +137,9 @@ function optionChanged(subject_id) {
     };
     Plotly.restyle("bubble", bubbles);
     Plotly.relayout("bubble", {title: `Test results for ${subject_id}`});
+
+    var subject = metadata.filter(sample => sample.id == subject_id)[0];
+    Plotly.restyle("gauge", {value: [subject.wfreq]});
 };
 
 d3.json("samples.json").then(jsonData => {
@@ -123,7 +155,8 @@ d3.json("samples.json").then(jsonData => {
         .attr("value", d => d.id)
         .text(d => d.id);
 
+    init_metadata("940");
     init_plot();
     init_bubles();
-    init_metadata("940");
+    init_gauge();
 });
