@@ -27,7 +27,7 @@ function get10(sample_id) {
         return zipped;
     }
     return undefined;
-}
+};
 
 function init_plot() {
     var top10 = get10("940");
@@ -50,7 +50,7 @@ function init_plot() {
       // Plot the chart to a div tag with id "plot"
       Plotly.newPlot("bar", data, layout);
       
-}
+};
 
 function init_bubles() {
     var sample = samples[0];
@@ -71,26 +71,25 @@ function init_bubles() {
     Plotly.newPlot("bubble", [trace1], layout);
 }
 
-d3.json("samples.json").then(jsonData => {
-    names = jsonData.names;
-    metadata = jsonData.metadata;
-    samples = jsonData.samples;
-    // console.log(names);
-    // console.log(metadata);
+function init_metadata(subject_id) {
+    var subject = metadata.filter(sample => sample.id == subject_id)[0];
+    console.log(subject);
+    var div = d3.select("#sample-metadata");
+    div.text("");
 
-    d3.select("#selDataset")
-        .selectAll("option")
-        .data(samples)
+    // var tbody = div.append("table").append("tbody");
+    var data = Object.entries(subject);
+
+    div.selectAll("p")
+        .data(data)
         .enter()
-        .append("option")
-        .attr("value", d => d.id)
-        .text(d => d.id);
-
-    init_plot();
-    init_bubles();
-})
+        .append("p")
+        .text(md => md.join(": "));
+};
 
 function optionChanged(subject_id) {
+    init_metadata(subject_id);
+
     data = get10(subject_id);
     console.log("Updating with", data);
     var update = {
@@ -111,4 +110,24 @@ function optionChanged(subject_id) {
     };
     Plotly.restyle("bubble", bubbles);
     Plotly.relayout("bubble", {title: `Test results for ${subject_id}`});
-}
+};
+
+d3.json("samples.json").then(jsonData => {
+    names = jsonData.names;
+    metadata = jsonData.metadata;
+    samples = jsonData.samples;
+    // console.log(names);
+    console.log(metadata);
+
+    d3.select("#selDataset")
+        .selectAll("option")
+        .data(samples)
+        .enter()
+        .append("option")
+        .attr("value", d => d.id)
+        .text(d => d.id);
+
+    init_plot();
+    init_bubles();
+    init_metadata("940");
+});
