@@ -73,7 +73,6 @@ function init_bubles() {
 
 function init_metadata(subject_id) {
     var subject = metadata.filter(sample => sample.id == subject_id)[0];
-    console.log(subject);
     var div = d3.select("#sample-metadata");
     div.text("");
 
@@ -91,7 +90,6 @@ function optionChanged(subject_id) {
     init_metadata(subject_id);
 
     data = get10(subject_id);
-    console.log("Updating with", data);
     var update = {
         x: [data.map(e => e.otu_value)],
         y: [data.map(e => `OTU ${e.otu_id}`)]
@@ -116,8 +114,6 @@ d3.json("samples.json").then(jsonData => {
     names = jsonData.names;
     metadata = jsonData.metadata;
     samples = jsonData.samples;
-    // console.log(names);
-    console.log(metadata);
 
     d3.select("#selDataset")
         .selectAll("option")
