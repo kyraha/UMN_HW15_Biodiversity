@@ -11,14 +11,7 @@ samples -- array of objects:
 var samples = [];
 
 function get10(sample_id) {
-    var sample = undefined;
-    for(var i = 0; i < samples.length; i++) {
-        if(samples[i].id == sample_id) {
-            sample = samples[i];
-            break;
-        }
-    }
-
+    var sample = samples.filter(sample => sample.id == sample_id)[0];
     if(sample != undefined) {
         zipped = sample.otu_ids.map(function(e, i) {
             return {
@@ -33,6 +26,7 @@ function get10(sample_id) {
             .sort((a,b) => a.otu_value - b.otu_value)
         return zipped;
     }
+    return undefined;
 }
 
 function init_plot() {
@@ -58,6 +52,25 @@ function init_plot() {
       
 }
 
+function init_bubles() {
+    var sample = samples[0];
+    var trace1 = {
+        x: sample.otu_ids,
+        y: sample.sample_values,
+        text: sample.otu_labels,
+        mode: "markers",
+        marker: {
+            size: sample.sample_values,
+            color: sample.otu_ids
+        }
+    };
+    var layout = {
+        title: `Test results for subject 940`,
+        xaxis: { title: "Sample values"}
+    };
+    Plotly.newPlot("bubble", [trace1], layout);
+}
+
 d3.json("samples.json").then(jsonData => {
     names = jsonData.names;
     metadata = jsonData.metadata;
@@ -74,6 +87,7 @@ d3.json("samples.json").then(jsonData => {
         .text(d => d.id);
 
     init_plot();
+    init_bubles();
 })
 
 function optionChanged(subject_id) {
@@ -84,4 +98,17 @@ function optionChanged(subject_id) {
         y: [data.map(e => `OTU ${e.otu_id}`)]
     };
     Plotly.restyle("bar", update);
+
+    var sample = samples.filter(sample => sample.id == subject_id)[0];
+    var bubbles = {
+        x: [sample.otu_ids],
+        y: [sample.sample_values],
+        text: [sample.otu_labels],
+        marker: {
+            size: sample.sample_values,
+            color: sample.otu_ids
+        }
+    };
+    Plotly.restyle("bubble", bubbles);
+    Plotly.relayout("bubble", {title: `Test results for ${subject_id}`});
 }
